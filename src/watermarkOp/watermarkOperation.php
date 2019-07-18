@@ -2,7 +2,7 @@
 
 
     function canExecuteWatermark($payload) {
-        if(!isset($payload[watermarkCommand]))
+        if(!isset($payload[WATERMARK]))
         {
             return false;
         }
@@ -11,10 +11,12 @@
 
 /**
  * @param Imagick $image
- * @return mixed
+ * @return array containing the position where the watermark will be placed
  * @throws Exception
+ *  @author Dornea Rebeca  <rebeca.dornea@evozon.com>
  */
-function createRandomCorner(Imagick $image, Imagick $watermark) {
+function createRandomCorner(Imagick $image, Imagick $watermark) : array
+{
         $imgWidth = $image->getImageWidth();
         $imgHeight = $image->getImageHeight();
         $watermarkW = $watermark->getImageWidth();
@@ -31,24 +33,25 @@ function createRandomCorner(Imagick $image, Imagick $watermark) {
 
     }
 
-/**
- * @param $payload
- * @throws Exception
- */
-function executeWatermark($payload)
+    /**
+     * @param $payload
+     * @throws Exception
+     * @return array containing the path where modified image to be saved
+     * @author Dornea Rebeca  <rebeca.dornea@evozon.com>
+     */
+function executeWatermark($payload) : array
     {
 
         if(!canExecuteWatermark($payload))
             return $payload;
 
-
-        $watermark = new Imagick($payload[watermarkCommand]);
+        $watermark = new Imagick($payload[WATERMARK]);
         $watermark->scaleImage($watermark->getImageWidth()/10, $watermark->getImageHeight()/10);
 
-        $randomCorner = createRandomCorner($payload[imageKey], $watermark);
+        $randomCorner = createRandomCorner($payload[IMAGE_KEY], $watermark);
 
-        $payload[imageKey]->compositeImage($watermark, imagick::COMPOSITE_DEFAULT ,$randomCorner[0], $randomCorner[1]);
+        $payload[IMAGE_KEY]->compositeImage($watermark, imagick::COMPOSITE_DEFAULT ,$randomCorner[0], $randomCorner[1]);
 
-        return [ outputKey => $payload[outputKey] ,imageKey => $payload[imageKey]];
+        return [ OUTPUT_KEY => $payload[OUTPUT_KEY] ,IMAGE_KEY => $payload[IMAGE_KEY]];
     }
 

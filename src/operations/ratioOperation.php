@@ -7,11 +7,16 @@
 
     function canExecuteFormat($payload)
     {
-        if( !isset($payload[formatCommand]) )
+        if( !isset($payload[FORMAT_COMMAND]) )
             return false;
         return true;
     }
 
+/**
+ * @param $formatValue as given in input
+ * @return array
+ *  @author Dornea Rebeca  <rebeca.dornea@evozon.com>
+ */
     function castFormat($formatValue)
     {
         $formatParts = explode(':', $formatValue);
@@ -22,51 +27,54 @@
     }
 
 
-
-function executeFormat($payload) {
+/**
+ * Will resize the image given the current format.
+ * It takes into considerations all forms the command can take
+ * @param $payload
+ * @return array with initial info with the modified image
+ *  @author Dornea Rebeca  <rebeca.dornea@evozon.com>
+ */
+function executeFormat($payload) : array
+{
 
     if(!canExecuteFormat($payload))
         return $payload;
 
-    [$formatValueW, $formatValueH] = castFormat($payload[formatCommand]);
+    [$formatValueW, $formatValueH] = castFormat($payload[FORMAT_COMMAND]);
 
     $newWidth = 0;
     $newHeight = 0;
 
-    //comanda --width --height --format
-    if( isset($payload[widthCommand]) && isset($payload[ heightCommand ])){
-         $newWidth = (float)$payload[widthCommand];
+    //command: --width --height --format
+    if( isset($payload[WIDTH_COMMAND]) && isset($payload[ HEIGHT_COMMAND ])){
+         $newWidth = (float)$payload[WIDTH_COMMAND];
         $newHeight = ($newWidth * $formatValueH)/$formatValueW;
-        print "in --w  --h --f".PHP_EOL.$newHeight.' '.$newWidth.PHP_EOL;
 
 
     }
 
-    //comanda --width --format
-    if( isset($payload[widthCommand]) && !isset($payload[ heightCommand ])) {
-        $newWidth = (float)$payload[widthCommand];
+    //command: --width --format
+    if( isset($payload[WIDTH_COMMAND]) && !isset($payload[ HEIGHT_COMMAND ])) {
+        $newWidth = (float)$payload[WIDTH_COMMAND];
         $newHeight = ($newWidth * $formatValueH)/$formatValueW;
-        print "in --w --f".PHP_EOL.$newHeight.' '.$newWidth.PHP_EOL;
 
 
     }
 
-    //comanda --height --format
-    if( !isset($payload[widthCommand]) && isset($payload[ heightCommand ])) {
-        $newHeight = (float)$payload[heightCommand];
+    //command: --height --format
+    if( !isset($payload[WIDTH_COMMAND]) && isset($payload[ HEIGHT_COMMAND ])) {
+        $newHeight = (float)$payload[HEIGHT_COMMAND];
         $newWidth = ($newHeight * $formatValueW) / $formatValueH;
-        print "in --h --f".PHP_EOL.$newHeight.' '.$newWidth.PHP_EOL;
     }
 
-    //comanda  --format
-    if( !isset($payload[widthCommand]) && !isset($payload[ heightCommand ])) {
-        $newWidth = (float)($payload[imageKey]->getImageWidth());
+    //command:  --format
+    if( !isset($payload[WIDTH_COMMAND]) && !isset($payload[ HEIGHT_COMMAND ])) {
+        $newWidth = (float)($payload[IMAGE_KEY]->getImageWidth());
         $newHeight = ($newWidth * $formatValueH)/$formatValueW;
-        print "in --f".PHP_EOL.$newHeight.' '.$newWidth.PHP_EOL;
 
     }
 
-    $payload[imageKey]->scaleImage($newWidth, $newHeight);
+    $payload[IMAGE_KEY]->scaleImage($newWidth, $newHeight);
 
     return $payload;
 }

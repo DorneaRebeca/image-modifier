@@ -9,26 +9,36 @@
     include "./watermarkOp/watermarkOperation.php";
     include "./errors/error.php";
     include "./output/output.php";
+    include "./validations/validations.php";
+    include "./helpCommand/help.php";
 
-const widthCommand = 'width';
-const heightCommand = 'height';
-const formatCommand = 'format';
-const imageKey = 'image';
-const outputKey = 'output-file';
-const inputKey = 'input-file';
-const watermarkCommand = 'watermark';
+const WIDTH_COMMAND = '--width';
+const HEIGHT_COMMAND = '--height';
+const FORMAT_COMMAND = '--format';
+const IMAGE_KEY = 'image';
+const OUTPUT_KEY = '--output-file';
+const INPUT_KEY = '--input-file';
+const WATERMARK = '--watermark';
+const DEFAULT_PATH = '../savedPhotos/';
+const HELP_COMMAND = '--help';
 
 
 
 
-//$payload['image'] = readFromFile($argv[1]);
-    $payload = createArray($argv);
-    $payload = readImage($payload);
-    $payload = executeWidth($payload);
-    $payload = executeHeight($payload);
-    $payload = executeFormat($payload);
-    $payload = executeWatermark($payload);
-    $payload = saveImage($payload);
 
-   // $saved = saveImageToPath($argv[2], $img);
+    $payload = createArrayFromInput($argv);
+    var_dump($payload);
+
+    if(!executeHelp($payload))
+    {
+        $payload = validate($payload);
+        $payload = readImage($payload);
+        $payload = executeWidth($payload);
+        $payload = executeHeight($payload);
+        $payload = executeFormat($payload);
+        $payload = executeWatermark($payload);
+        $payload = saveImage($payload);
+    }
+
+
 

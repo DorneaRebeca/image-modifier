@@ -8,6 +8,7 @@
 /**
  * @param $path
  * @return Imagick
+ *  @author Dornea Rebeca  <rebeca.dornea@evozon.com>
  * @throws ImagickException
  */
 function readFromFile($path) {
@@ -18,22 +19,27 @@ function readFromFile($path) {
 
     }
 
-
 /**
+ * Will read the image from file at path given or at default path
  * @param $payload
- * @return mixed
+ * @return array containing information given and the new image resource
  * @throws ImagickException
+ *  @author Dornea Rebeca  <rebeca.dornea@evozon.com>
  */
-function readImage($payload) {
+function readImage($payload)
+{
 
-        $path = $payload[inputKey];
+    $path = $payload[INPUT_KEY];
 
-        $loadedImage =  readFromFile($path);
+    if(preg_match(DEFAULT_PATTERN, $payload[INPUT_KEY])){
+        $loadedImage =  readFromFile(DEFAULT_PATH.$path);
+    }
+    else $loadedImage =  readFromFile($path);
 
-        $newPayload = $payload;
-        $newPayload[imageKey] = $loadedImage;
+    $newPayload = $payload;
+    $newPayload[IMAGE_KEY] = $loadedImage;
 
-        return $newPayload;
+    return $newPayload;
     }
 
 

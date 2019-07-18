@@ -1,42 +1,33 @@
 <?php
 
-
-
-    const pattern = '/--(?<key>[a-z | -]+)=(?<value>[a-z|0-9|\/|\.|:]+)/';
     const command = 0;
     const value = 1;
-    const helpCommand = '--help';
 
 
-
-
-
-    function createArray($argv)
+/**
+ *  Creates the array containing the input information structured in an array argument => value
+ *  @author Dornea Rebeca  <rebeca.dornea@evozon.com>
+ * @param $argv
+ * @return array containing all the information given in input
+ */
+function createArrayFromInput($argv)
     {
         $payload = [];
-        //$makeArray =
-        if(array_search(helpCommand, $argv))
+        if(array_search(HELP_COMMAND, $argv))
         {
-            return helpCommand;
+            $payload[HELP_COMMAND] = HELP_COMMAND;
+            return $payload;
         }
 
         for ($i = 1; $i < sizeof($argv); $i++){
-
-            /*preg_replace_callback(pattern, function ($match) use (&$payload)
-            {
-                print $match[1].' '.$match[2].PHP_EOL;
-
-                $payload[ $match[1] ] = $match[2];
-            },
-                $argv[$i]);
-            */
-
             $inputParted = explode('=', $argv[$i]);
-            $transformedCommand = str_replace('--', '',$inputParted[command]);
-            $payload[ $transformedCommand ] = $inputParted[value];
+
+            if(sizeof($inputParted)>1)
+                $payload[$inputParted[command] ] = $inputParted[value];
+            else
+                $payload[$inputParted[command] ] = ' ';
 
         }
-
         return $payload;
     }
 
